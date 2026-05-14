@@ -1,0 +1,50 @@
+﻿@page
+@model MusicService.Pages.Admin.CreateAlbumModel
+@{
+    ViewData["Title"] = "Создать альбом";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0">Новый альбом</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.Message != null)
+                    {
+                        <div class="alert @(Model.Message.Contains("Ошибка") ? "alert-danger" : "alert-success") small">
+                            @Model.Message
+                        </div>
+                    }
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Название альбома</label>
+                            <input asp-for="Title" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Исполнитель</label>
+                            <input asp-for="ArtistName" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Дата релиза</label>
+                            <input asp-for="ReleaseDate" type="date" class="form-control" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Обложка альбома</label>
+                            <input type="file" asp-for="UploadedCover" class="form-control" accept="image/*" />
+                            <small class="text-muted">Если не выбрать файл, будет установлена стандартная обложка.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">Создать альбом</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

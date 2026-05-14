@@ -1,0 +1,78 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная";
+}
+
+@if (MusicService.Models.UserSession.CurrentUserId != null)
+{
+    <h2 class="mb-4 fw-bold">Рекомендации</h2>
+
+    @if (Model.Recommendations.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+            @foreach (var track in Model.Recommendations)
+            {
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm transition-hover">
+                        <div class="row g-0">
+                            <div class="col-4">
+                                <img src="@track.DisplayCoverPath" class="img-fluid rounded-start h-100 square-cover" style="object-fit: cover;" />
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-1 text-truncate">@track.Title</h5>
+                                    <p class="text-muted small mb-2">@track.Album.Artist.Name</p>
+                                    
+                                    <audio controls class="w-100 mb-2" style="height: 30px;">
+                                        <source src="@track.FilePath" type="audio/mpeg">
+                                    </audio>
+
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <form method="post" asp-page-handler="ToggleLike" asp-route-trackId="@track.Id">
+                                                <button class="btn btn-sm w-100 @(Model.LikedTrackIds.Contains(track.Id) ? "btn-danger" : "btn-outline-secondary")">
+                                                    ❤ Лайк
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="col-6">
+                                            <form method="post" asp-page-handler="ToggleDislike" asp-route-trackId="@track.Id">
+                                                <button class="btn btn-sm w-100 @(Model.DislikedTrackIds.Contains(track.Id) ? "btn-dark" : "btn-outline-secondary")">
+                                                    💔 Дизлайк
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4 mb-5">
+            <a asp-page="/Index" class="btn btn-outline-primary px-5 shadow-sm">Обновить подборку</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center mt-5 p-5 border rounded bg-light">
+            <h4>Рекомендаций пока нет</h4>
+            <p class="text-muted">Оцените несколько треков в каталоге, чтобы мы поняли ваши вкусы.</p>
+            <a asp-page="/Tracks/Index" class="btn btn-primary px-4">Перейти в каталог</a>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center mt-5 p-5 bg-light rounded">
+        <h3 class="fw-bold">Добро пожаловать!</h3>
+        <p class="text-muted">Для получения персональных рекомендаций необходимо авторизоваться в системе.</p>
+        <div class="mt-3">
+            <a asp-page="/Accounts/Login" class="btn btn-primary px-4 me-2">Войти</a>
+            <a asp-page="/Accounts/Register" class="btn btn-outline-secondary px-4">Зарегистрироваться</a>
+        </div>
+    </div>
+}

@@ -1,0 +1,68 @@
+﻿@page
+@model MusicService.Pages.Admin.UploadModel
+@{
+    ViewData["Title"] = "Загрузка трека";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">Добавление новой композиции</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.Message != null)
+                    {
+                        <div class="alert @(Model.Message.Contains("Ошибка") ? "alert-danger" : "alert-success")">
+                            @Model.Message
+                        </div>
+                    }
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Название трека</label>
+                            <input asp-for="TrackTitle" class="form-control" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Исполнитель</label>
+                                <input asp-for="ArtistName" class="form-control" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Альбом</label>
+                                <input asp-for="AlbumTitle" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Жанр</label>
+                                <input asp-for="GenreName" class="form-control" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Длительность (ЧЧ:ММ:СС)</label>
+                                <input asp-for="DurationStr" class="form-control" placeholder="00:03:45" required />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Аудиофайл</label>
+                            <input type="file" asp-for="TrackFile" class="form-control" accept="audio/mpeg" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Обложка трека</label>
+                            <input type="file" asp-for="TrackCover" class="form-control" accept="image/*" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">Загрузить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

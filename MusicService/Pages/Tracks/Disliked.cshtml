@@ -1,0 +1,42 @@
+﻿@page
+@model MusicService.Pages.Tracks.DislikedModel
+@{
+    ViewData["Title"] = "Дизлайки";
+}
+
+<div class="mb-4">
+    <h1 class="display-5 fw-bold text-dark">Дизлайки</h1>
+    <p class="text-muted">Эти треки исключены из ваших персональных рекомендаций.</p>
+</div>
+
+<div class="list-group shadow-sm">
+    @foreach (var track in Model.DislikedTracks)
+    {
+        <div class="list-group-item d-flex align-items-center py-3 bg-light">
+            <img src="@track.DisplayCoverPath" class="rounded me-3  square-cover" style="width: 70px; height: 70px;" />
+            
+            <div class="flex-grow-1">
+                <h6 class="mb-1">@track.Title</h6>
+                <p class="text-muted small mb-2">@track.Album.Artist.Name — @track.Album.Title</p>
+                
+                <audio controls class="w-100" style="height: 28px; filter: sepia(20%);">
+                    <source src="@track.FilePath" type="audio/mpeg">
+                    Браузер не поддерживает аудио.
+                </audio>
+            </div>
+
+            <div class="ms-3">
+                <form method="post" asp-page-handler="Remove" asp-route-trackId="@track.Id">
+                    <button class="btn btn-sm btn-outline-primary">Вернуть</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.DislikedTracks.Any())
+{
+    <div class="text-center py-5">
+        <p class="text-muted">Ваш список дизлайков пуст.</p>
+    </div>
+}

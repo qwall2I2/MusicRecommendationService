@@ -1,0 +1,120 @@
+﻿@page
+@model MusicService.Pages.Tracks.IndexModel
+@{
+    ViewData["Title"] = "Каталог музыки";
+}
+
+@if (TempData["SuccessCatalog"] != null)
+{
+    <div class="alert alert-success" id="msg">@TempData["SuccessCatalog"]</div>
+}
+@if (TempData["ErrorCatalog"] != null)
+{
+    <div class="alert alert-danger" id="msg">@TempData["ErrorCatalog"]</div>
+}
+
+@if (MusicService.Models.UserSession.CurrentUserId != null)
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Каталог</h1>
+        
+        <form method="get" class="d-flex w-50">
+            <div class="input-group shadow-sm">
+                <input type="text" asp-for="SearchString" class="form-control" placeholder="Трек, артист или альбом..." />
+                <button class="btn btn-primary" type="submit">Найти</button>
+                @if (!string.IsNullOrEmpty(Model.SearchString))
+                {
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Сброс</a>
+                }
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        @foreach (var item in Model.Track)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="@item.DisplayCoverPath" class="rounded me-3  square-cover" style="width: 80px; height: 80px;" />
+                            <div class="flex-grow-1">
+                                <h5 class="mb-0">@item.Title</h5>
+                                <p class="text-muted small mb-0">@item.Album.Artist.Name - @item.Album.Title</p>
+                                <span class="badge bg-light text-dark border mt-1">@item.Genre.Name</span>
+                            </div>
+                        </div>
+
+                        <audio controls class="w-100 mb-3" style="height: 30px;">
+                            <source src="@item.FilePath" type="audio/mpeg">
+                        </audio>
+
+                        <div class="row g-2 align-items-center">
+                            <div class="col-4">
+                                <div class="btn-group w-100">
+                                    <form method="post" asp-page-handler="ToggleLike" asp-route-trackId="@item.Id" asp-route-SearchString="@Model.SearchString" class="w-50">
+                                        <button class="btn btn-sm w-100 @(Model.LikedTrackIds.Contains(item.Id) ? "btn-danger" : "btn-outline-secondary")">❤</button>
+                                    </form>
+                                    <form method="post" asp-page-handler="ToggleDislike" asp-route-trackId="@item.Id" asp-route-SearchString="@Model.SearchString" class="w-50">
+                                        <button class="btn btn-sm w-100 @(Model.DislikedTrackIds.Contains(item.Id) ? "btn-dark" : "btn-outline-secondary")">💔</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="col-8">
+                                @if (Model.UserPlaylists.Any())
+                                {
+                                    <form method="post" asp-page-handler="AddToPlaylist" asp-route-trackId="@item.Id" asp-route-SearchString="@Model.SearchString">
+                                        <div class="input-group input-group-sm">
+                                            <select name="playlistId" class="form-select" required>
+                                                <option value="">В плейлист</option>
+                                                @foreach (var pl in Model.UserPlaylists)
+                                                {
+                                                    <option value="@pl.Id">@pl.Title</option>
+                                                }
+                                            </select>
+                                            <button class="btn btn-primary" type="submit">Добавить</button>
+                                        </div>
+                                    </form>
+                                }
+                            </div>
+                            @if (MusicService.Models.UserSession.Role == "администратор")
+                            {
+                                <div class="border-top mt-3 pt-2">
+                                    <form method="post" asp-page-handler="DeleteTrack"
+                                          asp-route-id="@item.Id"
+                                          asp-route-SearchString="@Model.SearchString">
+                                        <button class="btn btn-sm btn-danger w-100">
+                                            Удалить трек
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Track.Any())
+    {
+        <div class="text-center py-5">
+            <p class="text-muted">Ничего не найдено по запросу "@Model.SearchString"</p>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center mt-5 p-5 bg-light rounded">
+        <h3 class="fw-bold">Добро пожаловать!</h3>
+        <p class="text-muted">Для прослушивания музыки и поиска по каталогу необходимо авторизоваться.</p>
+        <div class="mt-3">
+            <a asp-page="/Accounts/Login" class="btn btn-primary px-4 me-2">Войти</a>
+            <a asp-page="/Accounts/Register" class="btn btn-outline-secondary px-4">Зарегистрироваться</a>
+        </div>
+    </div>
+}
+
+<script>
+    setTimeout(() => document.getElementById('msg')?.remove(), 2000);
+</script>

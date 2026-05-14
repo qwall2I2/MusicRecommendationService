@@ -1,0 +1,42 @@
+﻿@page
+@model MusicService.Pages.Tracks.LikedModel
+@{
+    ViewData["Title"] = "Любимые треки";
+}
+
+<div class="mb-4">
+    <h1 class="display-5 fw-bold text-danger">Любимые треки</h1>
+    <p class="text-muted">Всего композиций: @Model.LikedTracks.Count</p>
+</div>
+
+<div class="list-group shadow-sm">
+    @foreach (var track in Model.LikedTracks)
+    {
+        <div class="list-group-item d-flex align-items-center py-3">
+            <img src="@track.DisplayCoverPath" class="rounded me-3  square-cover" style="width: 60px; height: 60px;" />
+            
+            <div class="flex-grow-1">
+                <h6 class="mb-0">@track.Title</h6>
+                <small class="text-muted">@track.Album.Artist.Name — @track.Album.Title</small>
+                
+                <audio controls class="d-block w-100 mt-2" style="height: 30px;">
+                    <source src="@track.FilePath" type="audio/mpeg">
+                </audio>
+            </div>
+
+            <div class="ms-3">
+                <form method="post" asp-page-handler="Unlike" asp-route-trackId="@track.Id">
+                    <button class="btn btn-sm btn-outline-secondary">Удалить</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.LikedTracks.Any())
+{
+    <div class="text-center py-5">
+        <p class="text-muted">Вы еще не добавили ни одного трека в любимые.</p>
+        <a asp-page="./Index" class="btn btn-primary">Перейти в каталог</a>
+    </div>
+}
